@@ -1,5 +1,5 @@
-name: 'RelizaHub Build And Submit Release metadata action'
-description: 'RelizaHub Build And Submit Release metadata action'
+name: 'RelizaHub Version and Publish Helm Chart Action'
+description: 'GitHub Action to version and publish helm chart to an oci compliant registry and submit the release metadata to RelizaHub.'
 branding:
   icon: 'anchor'
   color: 'green'
