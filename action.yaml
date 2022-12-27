@@ -94,7 +94,6 @@ runs:
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
         reliza_api_url: ${{inputs.reliza_api_url}}
-        path: ${{inputs.path}}
         image_full_name: ${{inputs.repository_host}}/${{inputs.helm_chart_name}}
         image_digest: sha256:$SHA_DIGEST
         reliza_full_version: ${{ steps.get-version.outputs.reliza_full_version }}
