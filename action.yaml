@@ -49,11 +49,11 @@ runs:
         path: ${{inputs.path}}
     - name: Instantiate Reliza status as Rejected to handle possible build failure
       shell: bash
-      if: ${{ steps.get-version.outputs.reliza_do_build }} == 'true'
+      if: ${{ steps.get-version.outputs.reliza_do_build  == 'true' }}
       run: echo "RELIZA_BUILD_STATUS=rejected" >> $GITHUB_ENV
     - name: Build and push docker container to Reliza Hub Registry
       shell: bash
-      if: ${{ steps.get-version.outputs.reliza_do_build }} == 'true'
+      if: ${{ steps.get-version.outputs.reliza_do_build  == 'true' }}
       continue-on-error: true
       run: |
         cd ${{ inputs.path }}
@@ -88,7 +88,7 @@ runs:
         echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
       uses: relizaio/reliza-add-release@master
-      if: ${{ steps.get-version.outputs.reliza_do_build }} == 'true'
+      if: ${{ steps.get-version.outputs.reliza_do_build  == 'true' }}
       with:
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
