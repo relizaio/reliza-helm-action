@@ -75,18 +75,27 @@ runs:
         else
           commit_list=$(git log -2 --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
         fi        
-        
+        echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
+    - name: Install helm
+      if: ${{env.RELIZA_DO_BUILD == 'true'}}
+      uses: azure/setup-helm@v3
+      with:
+          version: v3.10.0
+    - name: Publish Helm Chart
+      if: ${{env.RELIZA_DO_BUILD == 'true'}}
+      shell: bash
+      run: 
         # publish helm chart on Reliza Hub registry
-        docker run --rm -v $(pwd)/${{inputs.helm_chart_name}}:/apps/helm relizaio/helmpush cm-push /apps/helm ${{inputs.repository_host}} -u '${{ inputs.repository_username }}' -p '${{ inputs.repository_password }}'
+        helm push ${{inputs.helm_chart_name}} ${{inputs.repository_host}} -u '${{ inputs.repository_username }}' -p '${{ inputs.repository_password }}'
         
         # download and compute sha256 digest for helm chart package tgz
-        docker run --rm -v $(pwd):/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm repo add repo ${{inputs.repository_host}} --username '${{ inputs.repository_username }}' --password '${{ inputs.repository_password }}' && helm pull repo/${{inputs.helm_chart_name}} -d /apps/helm/"
+        helm repo add repo ${{inputs.repository_host}} --username '${{ inputs.repository_username }}' --password '${{ inputs.repository_password }}' && helm pull repo/${{inputs.helm_chart_name}}
         sha_digest=$(sha256sum $(pwd)/*.tgz | cut -f 1 -d ' ')
         echo "shadigest = $sha_digest"        
         
         echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
         echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
-        echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
+        
     - name: Submit metadata to Reliza Hub
       uses: relizaio/reliza-add-release@1.0
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
