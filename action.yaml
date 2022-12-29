@@ -84,7 +84,7 @@ runs:
     - name: Publish Helm Chart
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       shell: bash
-      run: 
+      run: |
         # publish helm chart on Reliza Hub registry
         helm push ${{inputs.helm_chart_name}} ${{inputs.repository_host}} -u '${{ inputs.repository_username }}' -p '${{ inputs.repository_password }}'
         
