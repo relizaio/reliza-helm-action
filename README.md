@@ -28,3 +28,4 @@ The actions supports the following inputs:
 - `repository_host`: Chart repository host.
 - `helm_chart_name`: Name of the helm chart.
 - `path`: Path to the relative to root of the repo (default is '.')
+- `reliza_project_id`: Project UUID if an org-wide key is used.
