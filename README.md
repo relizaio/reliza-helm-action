@@ -8,7 +8,7 @@ GitHub Action to version and publish helm chart to an oci compliant registry and
 
 ```yaml
 steps:
-- uses: relizaio/reliza-helm-action@1.1
+- uses: relizaio/reliza-helm-action@1.2
   with:
     reliza_api_id: <api-id-obtained-from-relizahub>
     reliza_api_key: <api-key-obtained-from-relizahub>
