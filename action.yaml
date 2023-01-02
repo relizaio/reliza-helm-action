@@ -4,13 +4,13 @@ branding:
   icon: 'anchor'
   color: 'green'
 inputs:
-  repository_username:
+  registry_username:
     description: "Username for chart repository"
     required: true
-  repository_password:
+  registry_password:
     description: "Password for chart repository"
     required: true
-  repository_host:
+  registry_host:
     description: "Host for chart repository"
     required: true
   helm_chart_name:
@@ -35,6 +35,13 @@ inputs:
     required: false
   reliza_project_id:
     description: "Project UUID for this release if org-wide key is used"
+    required: false
+  registry_type:
+    description: "Type of registry, [OCI | ECR | CHARTMEUSEUM - default is OCI]"
+    required: false
+    default: OCI
+  aws_region:
+    description: "AWS region, required when registry type is ECR"
     required: false
 runs:
   using: "composite"
@@ -85,21 +92,44 @@ runs:
       uses: azure/setup-helm@v3
       with:
           version: v3.10.0
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      if: ${{"${{inputs.registry_type}}" = "ECR"}}
+      with:
+        aws-access-key-id: ${{ inputs.registry_username }}
+        aws-secret-access-key: ${{ inputs.registry_password }}
     - name: Publish Helm Chart
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       shell: bash
       run: |
+      if ["${{inputs.registry_type}}" = "OCI"]
+      then
+        helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' ${{inputs.registry_host}}
+        helm package ${{inputs.helm_chart_name}}
+        helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
+
+      elif ["${{inputs.registry_type}}" = "ECR"]
+      then
+        aws ecr get-login-password \
+          --region ${{inputs.aws_region}} | helm registry login \
+          --username AWS \
+          --password-stdin ${{inputs.registry_host}}
+        helm package ${{inputs.helm_chart_name}}
+        helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
+      elif ["${{inputs.registry_type}}" = "CHARTMEUSEUM"]
+      then
         # publish helm chart on Reliza Hub registry
-        helm push ${{inputs.helm_chart_name}} ${{inputs.repository_host}} -u '${{ inputs.repository_username }}' -p '${{ inputs.repository_password }}'
-        
+        docker run --rm -v $(pwd)/${{inputs.helm_chart_name}}:/apps/helm relizaio/helmpush cm-push /apps/helm ${{inputs.registry_host}} -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}'
+
         # download and compute sha256 digest for helm chart package tgz
-        helm repo add repo ${{inputs.repository_host}} --username '${{ inputs.repository_username }}' --password '${{ inputs.repository_password }}' && helm pull repo/${{inputs.helm_chart_name}}
-        sha_digest=$(sha256sum $(pwd)/*.tgz | cut -f 1 -d ' ')
-        echo "shadigest = $sha_digest"        
-        
-        echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
-        echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
-        
+        docker run --rm -v $(pwd):/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm repo add repo ${{inputs.registry_host}} --username '${{ inputs.registry_username }}' --password '${{ inputs.registry_password }}' && helm pull repo/${{inputs.helm_chart_name}} -d /apps/helm/"
+      fi
+              
+      sha_digest=$(sha256sum $(pwd)/*.tgz | cut -f 1 -d ' ')
+      echo "shadigest = $sha_digest"        
+  
+      echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
+      echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
       uses: relizaio/reliza-add-release@1.1
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
@@ -107,7 +137,7 @@ runs:
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
         reliza_api_url: ${{inputs.reliza_api_url}}
-        image_full_name: ${{inputs.repository_host}}/${{inputs.helm_chart_name}}
+        image_full_name: ${{inputs.registry_host}}/${{inputs.helm_chart_name}}
         image_digest: sha256:$SHA_DIGEST
         reliza_full_version: ${{ steps.get-version.outputs.reliza_full_version }}
         reliza_build_start: ${{ steps.get-version.outputs.reliza_build_start }}
