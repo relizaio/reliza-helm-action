@@ -129,11 +129,11 @@ runs:
             ;;
         esac
               
-      sha_digest=$(sha256sum $(pwd)/*.tgz | cut -f 1 -d ' ')
-      echo "shadigest = $sha_digest"        
+        sha_digest=$(sha256sum $(pwd)/*.tgz | cut -f 1 -d ' ')
+        echo "shadigest = $sha_digest"    
   
-      echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
-      echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
+        echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
+        echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
       uses: relizaio/reliza-add-release@1.1
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
