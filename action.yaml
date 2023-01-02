@@ -94,7 +94,7 @@ runs:
           version: v3.10.0
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
-      if: ${{ inputs.registry_type == "ECR"}}
+      if: ${{ inputs.registry_type == 'ECR'}}
       with:
         aws-access-key-id: ${{ inputs.registry_username }}
         aws-secret-access-key: ${{ inputs.registry_password }}
@@ -102,13 +102,13 @@ runs:
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       shell: bash
       run: |
-      if ["${{inputs.registry_type}}" = "OCI"]
+      if ["${{inputs.registry_type}}" == "OCI"]
       then
         helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' ${{inputs.registry_host}}
         helm package ${{inputs.helm_chart_name}}
         helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
 
-      elif ["${{inputs.registry_type}}" = "ECR"]
+      elif ["${{inputs.registry_type}}" == "ECR"]
       then
         aws ecr get-login-password \
           --region ${{inputs.aws_region}} | helm registry login \
@@ -116,7 +116,7 @@ runs:
           --password-stdin ${{inputs.registry_host}}
         helm package ${{inputs.helm_chart_name}}
         helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
-      elif ["${{inputs.registry_type}}" = "CHARTMEUSEUM"]
+      elif ["${{inputs.registry_type}}" == "CHARTMEUSEUM"]
       then
         # publish helm chart on Reliza Hub registry
         docker run --rm -v $(pwd)/${{inputs.helm_chart_name}}:/apps/helm relizaio/helmpush cm-push /apps/helm ${{inputs.registry_host}} -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}'
