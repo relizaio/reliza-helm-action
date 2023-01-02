@@ -94,7 +94,7 @@ runs:
           version: v3.10.0
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
-      if: ${{ inputs.registry_type = "ECR"}}
+      if: ${{ inputs.registry_type == "ECR"}}
       with:
         aws-access-key-id: ${{ inputs.registry_username }}
         aws-secret-access-key: ${{ inputs.registry_password }}
