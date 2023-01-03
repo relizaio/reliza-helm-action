@@ -8,7 +8,7 @@ GitHub Action to version and publish helm chart to an oci compliant registry and
 
 ```yaml
 steps:
-- uses: relizaio/reliza-helm-action@1.2
+- uses: relizaio/reliza-helm-action@1.3
   with:
     reliza_api_id: <api-id-obtained-from-relizahub>
     reliza_api_key: <api-key-obtained-from-relizahub>
@@ -29,3 +29,5 @@ The actions supports the following inputs:
 - `helm_chart_name`: Name of the helm chart.
 - `path`: Path to the relative to root of the repo (default is '.')
 - `reliza_project_id`: Project UUID if an org-wide key is used.
+- `registry_type`: Type of registry, [OCI | ECR | CHARTMEUSEUM - default is OCI].
+- `aws_region`: AWS region, required when registry type is ECR.
