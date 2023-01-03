@@ -93,11 +93,12 @@ runs:
       with:
           version: v3.10.0
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       if: ${{ inputs.registry_type == 'ECR'}}
       with:
         aws-access-key-id: ${{ inputs.registry_username }}
         aws-secret-access-key: ${{ inputs.registry_password }}
+        aws-region: ${{inputs.aws_region}}
     - name: Publish Helm Chart
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       shell: bash
