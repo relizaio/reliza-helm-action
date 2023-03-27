@@ -51,7 +51,7 @@ runs:
       uses: relizaio/setup-reliza-cli@1.0
     - id: get-version
       name: Get Version
-      uses: relizaio/reliza-get-version@1.3
+      uses: relizaio/reliza-get-version@1.4
       with: 
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
