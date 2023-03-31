@@ -82,9 +82,9 @@ runs:
         
         if [ ! -z "${{ steps.get-version.outputs.reliza_last_commit }}" ]
         then
-          commit_list=$(git log ${{ steps.get-version.outputs.reliza_last_commit }}..$commit_sha --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
+          commit_list=$(git log ${{ steps.get-version.outputs.reliza_last_commit }}..$commit_sha --date=iso-strict --pretty='%H|||%ad|||%s' ./ | base64 -w 0)
         else
-          commit_list=$(git log -2 --date=iso-strict --pretty='%H|||%ad|||%s' | base64 -w 0)
+          commit_list=$(git log -2 --date=iso-strict --pretty='%H|||%ad|||%s' ./ | base64 -w 0)
         fi        
         echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
     - name: Install helm
