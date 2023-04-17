@@ -37,7 +37,7 @@ inputs:
     description: "Project UUID for this release if org-wide key is used"
     required: false
   registry_type:
-    description: "Type of registry, [OCI | ECR | CHARTMEUSEUM - default is OCI]"
+    description: "Type of registry, [OCI | ECR | CHARTMUSEUM - default is OCI]"
     required: false
     default: OCI
   aws_region:
@@ -121,7 +121,7 @@ runs:
             helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
             ;;
 
-          CHARTMEUSEUM)
+          CHARTMUSEUM)
             # publish helm chart on Reliza Hub registry
             docker run --rm -v $(pwd)/${{inputs.helm_chart_name}}:/apps/helm relizaio/helmpush cm-push /apps/helm ${{inputs.registry_host}} -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}'
 
