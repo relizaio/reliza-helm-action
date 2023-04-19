@@ -70,7 +70,7 @@ runs:
       run: |
         cd ${{ inputs.path }}
         # update version on the chart
-        sed -i "/version: /s/.*/version: ${{ steps.get-version.outputs.reliza_full_version }}/" ${{inputs.helm_chart_name}}/Chart.yaml
+        sed -i "/^version: /s/.*/version: ${{ steps.get-version.outputs.reliza_full_version }}/" ${{inputs.helm_chart_name}}/Chart.yaml
         
         # git commit and update
         git config --global user.name 'reliza-auto'
