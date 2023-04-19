@@ -126,7 +126,7 @@ runs:
             docker run --rm -v $(pwd)/${{inputs.helm_chart_name}}:/apps/helm relizaio/helmpush cm-push /apps/helm ${{inputs.registry_host}} -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}'
 
             # download and compute sha256 digest for helm chart package tgz
-            docker run --rm -v $(pwd):/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm repo add repo ${{inputs.registry_host}} --username '${{ inputs.registry_username }}' --password '${{ inputs.registry_password }}' && helm pull repo/${{inputs.helm_chart_name}} -d /apps/helm/"
+            docker run --rm -v $(pwd):/apps/helm --entrypoint /bin/sh relizaio/helmpush -c "helm repo add repo ${{inputs.registry_host}} --username '${{ inputs.registry_username }}' --password '${{ inputs.registry_password }}' && helm pull repo/${{inputs.helm_chart_name}} --version ${{ steps.get-version.outputs.reliza_full_version }} -d /apps/helm/"
             ;;
         esac
               
