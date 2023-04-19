@@ -31,3 +31,17 @@ The actions supports the following inputs:
 - `reliza_project_id`: Project UUID if an org-wide key is used.
 - `registry_type`: Type of registry, [OCI | ECR | CHARTMEUSEUM - default is OCI].
 - `aws_region`: AWS region, required when registry type is ECR.
+
+## Permissions
+This action attempts to increment version in the Chart.yaml and make a new commit. This requires write permission to the given to the github-actions bot. To give such permissions, include following section in your workflow:
+
+```
+permissions:
+  contents: write
+```
+
+See a full sample in our Rebom workflow - https://github.com/relizaio/rebom/blob/master/.github/workflows/github_actions.yml
+
+Refer to GitHub documentations for more information - https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+
+If these permissions are not given, the action will still work but it won't be able to commit a new Chart version.
