@@ -29,7 +29,7 @@ The actions supports the following inputs:
 - `helm_chart_name`: Name of the helm chart.
 - `path`: Path to the relative to root of the repo (default is '.')
 - `reliza_project_id`: Project UUID if an org-wide key is used.
-- `registry_type`: Type of registry, [OCI | ECR | CHARTMEUSEUM - default is OCI].
+- `registry_type`: Type of registry, [OCI | ECR | CHARTMUSEUM - default is OCI].
 - `aws_region`: AWS region, required when registry type is ECR.
 
 ## Permissions
