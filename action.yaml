@@ -48,12 +48,12 @@ runs:
   steps:
     - id: setup-reliza-cli
       name: setup-reliza-cli
-      uses: relizaio/setup-reliza-cli@1.0
+      uses: relizaio/setup-reliza-cli@2.0
       with: 
         version: 2023.09.3
     - id: get-version
       name: Get Version
-      uses: relizaio/reliza-get-version@1.4
+      uses: relizaio/reliza-get-version@1.6
       with: 
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
@@ -91,11 +91,9 @@ runs:
         echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
     - name: Install helm
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
-      uses: azure/setup-helm@v3
-      with:
-          version: v3.10.0
+      uses: azure/setup-helm@v4.1.0
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4
       if: ${{ inputs.registry_type == 'ECR'}}
       with:
         aws-access-key-id: ${{ inputs.registry_username }}
