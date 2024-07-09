@@ -43,6 +43,10 @@ inputs:
   aws_region:
     description: "AWS region, required when registry type is ECR"
     required: false
+  enable_sbom:
+    required: false
+    default: 'false'
+    description: Generates SBOM and stores it along with the artifact
 runs:
   using: "composite"
   steps:
@@ -50,7 +54,7 @@ runs:
       name: setup-reliza-cli
       uses: relizaio/setup-reliza-cli@2.0
       with: 
-        version: 2023.09.3
+        version: 2023.09.27
     - id: get-version
       name: Get Version
       uses: relizaio/reliza-get-version@1.6
@@ -136,7 +140,7 @@ runs:
         echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
         echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
-      uses: relizaio/reliza-add-release@1.1
+      uses: relizaio/reliza-add-release@master
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       with:
         reliza_api_id: ${{ inputs.reliza_api_id }}
@@ -150,3 +154,9 @@ runs:
         commit_list: $COMMIT_LIST
         artifact_type: File
         reliza_project_id: ${{inputs.reliza_project_id}}
+        enable_sbom: ${{inputs.enable_sbom}}
+        registry_username: ${{inputs.registry_username}}
+        registry_password: ${{inputs.registry_password}}
+        registry_host: ${{inputs.registry_host}}
+        path: ${{inputs.path}}
+
