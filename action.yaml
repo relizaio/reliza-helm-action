@@ -62,7 +62,7 @@ runs:
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
         reliza_api_url: ${{inputs.reliza_api_url}}
-        path: ${{inputs.path}}
+        path: ${{inputs.path}}/${{inputs.helm_chart_name}}
         reliza_project_id: ${{inputs.reliza_project_id}}
     - name: Instantiate Reliza status as Rejected to handle possible build failure
       shell: bash
