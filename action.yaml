@@ -82,7 +82,7 @@ runs:
         git config --global user.name 'reliza-auto'
         git config --global user.email 'info@reliza.io'
         git add ${{inputs.helm_chart_name}}/Chart.yaml
-        git commit -m "chore: bump helm chart version to ${{ steps.get-version.outputs.reliza_full_version }}"
+        git commit -m "chore: bump helm chart version to ${{ steps.get-version.outputs.reliza_full_version }} [skip ci]"
         git push
         commit_sha=$(git log -1 --pretty='%H')
         
