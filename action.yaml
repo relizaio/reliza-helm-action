@@ -203,6 +203,7 @@ runs:
         rearm_component_id: ${{inputs.rearm_component_id}}
         enable_sbom: "true"
         source_code_sbom_type: helm
+        deliverable_type: FILE
         registry_username: ${{inputs.registry_username}}
         registry_password: ${{inputs.registry_password}}
         registry_host: ${{inputs.registry_host}}
