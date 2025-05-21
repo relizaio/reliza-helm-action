@@ -129,7 +129,9 @@ runs:
         case ${{inputs.registry_type}} in
 
           OCI)
-            helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' ${{inputs.registry_host}}
+            input_host=${{inputs.registry_host}}
+            helm_host=${input_host%%/*}
+            helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' $helm_host
             helm package ${{inputs.helm_chart_name}}
             helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
             ;;
