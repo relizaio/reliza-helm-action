@@ -113,7 +113,7 @@ runs:
         echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
     - name: Install helm
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
-      uses: azure/setup-helm@v4.1.0
+      uses: azure/setup-helm@v4.3.0
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       if: ${{ inputs.registry_type == 'ECR'}}
