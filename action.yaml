@@ -47,6 +47,23 @@ inputs:
     required: false
     default: 'false'
     description: Generates SBOM and stores it along with the artifact
+  push_to_rearm:
+    description: "Whether to handle SBOM logic via ReARM and push release there as well. Below options are required for ReARM."
+    required: false
+    default: 'false'
+  rearm_api_id:
+    description: "ReARM API ID"
+    required: false
+  rearm_api_key:
+    description: "ReARM API KEY"
+    required: false
+  rearm_api_url:
+    description: "ReARM API URL"
+    required: false
+    default: 'https://demo.rearmhq.com'
+  rearm_component_id:
+    description: "Component UUID for this release on ReARM if org-wide key is used"
+    required: false    
 runs:
   using: "composite"
   steps:
@@ -68,6 +85,7 @@ runs:
       shell: bash
       run: |
         echo "RELIZA_BUILD_STATUS=rejected" >> $GITHUB_ENV
+        echo "REARM_BUILD_STATUS=rejected" >> $GITHUB_ENV
         echo "RELIZA_DO_BUILD=${{ steps.get-version.outputs.reliza_do_build}}" >> $GITHUB_ENV
     - name: Build and push docker container to Reliza Hub Registry
       shell: bash
@@ -139,6 +157,7 @@ runs:
   
         echo "SHA_DIGEST=$sha_digest" >> $GITHUB_ENV
         echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
+        echo "REARM_BUILD_STATUS=ASSEMBLED" >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
       uses: relizaio/reliza-add-release@master
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
@@ -155,6 +174,31 @@ runs:
         artifact_type: File
         reliza_project_id: ${{inputs.reliza_project_id}}
         enable_sbom: ${{inputs.enable_sbom}}
+        registry_username: ${{inputs.registry_username}}
+        registry_password: ${{inputs.registry_password}}
+        registry_host: ${{inputs.registry_host}}
+        path: ${{inputs.path}}
+    - id: setup-rearm
+      name: setup-rearm
+      uses: relizaio/setup-rearm-cli-action@main
+      if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
+      with:
+        version: 25.04.2
+    - name: Submit metadata to ReARM
+      uses: relizaio/rearm-add-release@main
+      if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
+      with:
+        rearm_api_id: ${{ inputs.rearm_api_id }}
+        rearm_api_key: ${{ inputs.rearm_api_key }}
+        rearm_api_url: ${{inputs.rearm_api_url}}
+        image_full_name: ${{inputs.registry_host}}/${{inputs.helm_chart_name}}
+        image_digest: sha256:$SHA_DIGEST
+        rearm_full_version: ${{ steps.get-version.outputs.reliza_full_version }}
+        rearm_build_start: ${{ steps.get-version.outputs.reliza_build_start }}
+        rearm_build_status: $REARM_BUILD_STATUS
+        rearm_component_id: ${{inputs.rearm_component_id}}
+        enable_sbom: "true"
+        source_code_sbom_type: helm
         registry_username: ${{inputs.registry_username}}
         registry_password: ${{inputs.registry_password}}
         registry_host: ${{inputs.registry_host}}
