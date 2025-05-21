@@ -114,6 +114,8 @@ runs:
     - name: Install helm
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       uses: azure/setup-helm@v4.3.0
+      with:
+        version: '3.17.2'
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       if: ${{ inputs.registry_type == 'ECR'}}
@@ -129,9 +131,9 @@ runs:
         case ${{inputs.registry_type}} in
 
           OCI)
-            input_host=${{inputs.registry_host}}
-            helm_host=${input_host%%/*}
-            helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' $helm_host
+            #input_host=${{inputs.registry_host}}
+            #helm_host=${input_host%%/*}
+            helm registry login -u '${{ inputs.registry_username }}' -p '${{ inputs.registry_password }}' ${{inputs.registry_host}}
             helm package ${{inputs.helm_chart_name}}
             helm push $(pwd)/*.tgz oci://${{inputs.registry_host}}
             ;;
