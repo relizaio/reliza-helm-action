@@ -63,7 +63,11 @@ inputs:
     default: 'https://demo.rearmhq.com'
   rearm_component_id:
     description: "Component UUID for this release on ReARM if org-wide key is used"
-    required: false    
+    required: false
+  rearm_enable_public_cosign_sigstore:
+    required: false
+    default: 'false'
+    description: "Sign SBOMs using public sigstore via cosign"
 runs:
   using: "composite"
   steps:
@@ -208,4 +212,4 @@ runs:
         registry_password: ${{inputs.registry_password}}
         registry_host: ${{inputs.registry_host}}
         path: ${{inputs.path}}
-
+        enable_public_cosign_sigstore: ${{inputs.rearm_enable_public_cosign_sigstore}}
