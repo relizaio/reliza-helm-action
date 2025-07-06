@@ -73,12 +73,12 @@ runs:
   steps:
     - id: setup-reliza-cli
       name: setup-reliza-cli
-      uses: relizaio/setup-reliza-cli@2.0
+      uses: relizaio/setup-reliza-cli@4dcc898ec048f20a5809da24259f744408083573 # v2.1
       with: 
-        version: 2023.09.27
+        version: 2024.07.6
     - id: get-version
       name: Get Version
-      uses: relizaio/reliza-get-version@1.7
+      uses: relizaio/reliza-get-version@4517cde0dbb5b340f560a7e370f7d85923529915 # v1.8
       with: 
         reliza_api_id: ${{ inputs.reliza_api_id }}
         reliza_api_key: ${{ inputs.reliza_api_key }}
@@ -117,11 +117,11 @@ runs:
         echo "COMMIT_LIST=$commit_list " >> $GITHUB_ENV
     - name: Install helm
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
-      uses: azure/setup-helm@v4.3.0
+      uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4.3.0
       with:
         version: '3.17.2'
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
       if: ${{ inputs.registry_type == 'ECR'}}
       with:
         aws-access-key-id: ${{ inputs.registry_username }}
@@ -167,7 +167,7 @@ runs:
         echo "RELIZA_BUILD_STATUS=complete " >> $GITHUB_ENV
         echo "REARM_BUILD_STATUS=ASSEMBLED" >> $GITHUB_ENV
     - name: Submit metadata to Reliza Hub
-      uses: relizaio/reliza-add-release@master
+      uses: relizaio/reliza-add-release@3e9329b4ee80dd0b4cd7f08a1277bf4465da3539 # v1.3
       if: ${{env.RELIZA_DO_BUILD == 'true'}}
       with:
         reliza_api_id: ${{ inputs.reliza_api_id }}
@@ -188,12 +188,12 @@ runs:
         path: ${{inputs.path}}
     - id: setup-rearm
       name: setup-rearm
-      uses: relizaio/setup-rearm-cli-action@main
+      uses: relizaio/setup-rearm-cli-action@4cf6087e5ba79bcd1be9ffffcda853fbf2207ad6 # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with:
         version: 25.06.1
     - name: Submit metadata to ReARM
-      uses: relizaio/rearm-add-release@main
+      uses: relizaio/rearm-add-release@0b7d28458b876343a4c8e788c7bce14b7ac8eb98 # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with:
         rearm_api_id: ${{ inputs.rearm_api_id }}
