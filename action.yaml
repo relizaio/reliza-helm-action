@@ -110,7 +110,7 @@ runs:
         
         if [ ! -z "${{ steps.get-version.outputs.reliza_last_commit }}" ]
         then
-          commit_list=$(git log ${{ steps.get-version.outputs.reliza_last_commit }}..$commit_sha --date=iso-strict --pretty='%H|||%ad|||%s' ./ | base64 -w 0)
+          commit_list=$(git log ${{ steps.get-version.outputs.reliza_last_commit }}..$commit_sha --date=iso-strict --pretty='%H|||%ad|||%s|||%an|||%ae' -- ./ | base64 -w 0)
         else
           commit_list=$(git log -2 --date=iso-strict --pretty='%H|||%ad|||%s' ./ | base64 -w 0)
         fi        
@@ -193,7 +193,7 @@ runs:
       with:
         version: 25.07.1
     - name: Submit metadata to ReARM
-      uses: relizaio/rearm-add-release@07e1ed5a253548ce54fe5fb7e146e1a46c5f9360 # v1.1.0
+      uses: relizaio/rearm-add-release@2f1221baf008a7061c9dd604269ce22f29cb5c7b # v1.1.1
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with:
         rearm_api_id: ${{ inputs.rearm_api_id }}
@@ -203,6 +203,7 @@ runs:
         image_digest: sha256:$SHA_DIGEST
         rearm_full_version: ${{ steps.get-version.outputs.reliza_full_version }}
         rearm_build_start: ${{ steps.get-version.outputs.reliza_build_start }}
+        commit_list: $COMMIT_LIST
         rearm_build_status: $REARM_BUILD_STATUS
         rearm_component_id: ${{inputs.rearm_component_id}}
         enable_sbom: "true"
