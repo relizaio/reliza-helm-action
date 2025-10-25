@@ -73,7 +73,7 @@ runs:
   steps:
     - id: setup-reliza-cli
       name: setup-reliza-cli
-      uses: relizaio/setup-reliza-cli@475444dd26413717c1d6363b37a95d22daf642d9 # v2.1 - experimental
+      uses: relizaio/setup-reliza-cli@e3c10ce6e95db19d8bb8560a77af2d8e942c4c08 # v2.1 - experimental
       with: 
         version: 2024.07.6
     - id: get-version
@@ -189,7 +189,7 @@ runs:
         path: ${{inputs.path}}
     - id: setup-rearm
       name: setup-rearm
-      uses: relizaio/setup-rearm-cli-action@3a2fe0728116cc3a67868b9e0dcdef11384a91b4 # v1.0.0 - experimental
+      uses: relizaio/setup-rearm-cli-action@c2a544105e7f1572057cbe437fae410d585a240b # v1.0.0 - experimental
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with:
         version: 25.10.2
