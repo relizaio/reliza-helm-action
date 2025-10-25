@@ -133,9 +133,10 @@ runs:
       run: |
         cd ${{ inputs.path }}
         
-        # Create .helmignore to exclude CI temporary files (defense in depth)
-        echo "Creating .helmignore to exclude CI temporary files..."
-        cat > ${{inputs.helm_chart_name}}/.helmignore << 'EOF'
+        # Append to .helmignore to exclude CI temporary files (defense in depth)
+        echo "Appending CI temporary files to .helmignore..."
+        cat >> ${{inputs.helm_chart_name}}/.helmignore << 'EOF'
+
         # Reliza CI temporary files - these contain sensitive API keys and should never be packaged
         get_latest_release_cmd
         get_latest_release_exec
