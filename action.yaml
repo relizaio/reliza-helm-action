@@ -132,6 +132,62 @@ runs:
       shell: bash
       run: |
         cd ${{ inputs.path }}
+        
+        # Create .helmignore to exclude CI temporary files (defense in depth)
+        echo "Creating .helmignore to exclude CI temporary files..."
+        cat > ${{inputs.helm_chart_name}}/.helmignore << 'EOF'
+        # Reliza CI temporary files - these contain sensitive API keys and should never be packaged
+        get_latest_release_cmd
+        get_latest_release_exec
+        get_version_command
+        get_version_exec
+        reliza_command
+        rlz_cmd_exec
+        
+        # Additional common files to exclude
+        .git/
+        .gitignore
+        .DS_Store
+        *.swp
+        *.bak
+        *.tmp
+        *~
+        EOF
+        
+        # Clean up Reliza CI temporary files before packaging
+        echo "Cleaning up CI temporary files..."
+        find ${{inputs.helm_chart_name}} -type f \( \
+          -name 'get_latest_release_cmd' -o \
+          -name 'get_latest_release_exec' -o \
+          -name 'get_version_command' -o \
+          -name 'get_version_exec' -o \
+          -name 'reliza_command' -o \
+          -name 'rlz_cmd_exec' \
+        \) -delete
+        
+        # Verify cleanup was successful
+        echo "Verifying cleanup..."
+        if find ${{inputs.helm_chart_name}} -type f \( \
+          -name 'get_latest_release_cmd' -o \
+          -name 'get_latest_release_exec' -o \
+          -name 'get_version_command' -o \
+          -name 'get_version_exec' -o \
+          -name 'reliza_command' -o \
+          -name 'rlz_cmd_exec' \
+        \) | grep -q .; then
+          echo "ERROR: CI temporary files still exist after cleanup!"
+          find ${{inputs.helm_chart_name}} -type f \( \
+            -name 'get_latest_release_cmd' -o \
+            -name 'get_latest_release_exec' -o \
+            -name 'get_version_command' -o \
+            -name 'get_version_exec' -o \
+            -name 'reliza_command' -o \
+            -name 'rlz_cmd_exec' \
+          \)
+          exit 1
+        fi
+        echo "Cleanup verified successfully."
+        
         case ${{inputs.registry_type}} in
 
           OCI)

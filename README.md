@@ -45,3 +45,26 @@ See a full sample in our Rebom workflow - https://github.com/relizaio/rebom/blob
 Refer to GitHub documentations for more information - https://docs.github.com/en/actions/security-guides/automatic-token-authentication
 
 If these permissions are not given, the action will still work but it won't be able to commit a new Chart version.
+
+## Security
+
+### Automatic Cleanup of CI Temporary Files
+
+This action automatically protects against accidentally packaging sensitive CI temporary files in your Helm charts. The following files are excluded from the packaged chart:
+
+- `get_latest_release_cmd`
+- `get_latest_release_exec`
+- `get_version_command`
+- `get_version_exec`
+- `reliza_command`
+- `rlz_cmd_exec`
+
+**These files may contain API keys and should never be distributed.**
+
+The action implements a defense-in-depth approach:
+
+1. **Creates a `.helmignore` file** - Helm's native mechanism to exclude files during packaging
+2. **Actively deletes** temporary files before packaging
+3. **Verifies cleanup** - Fails the build if any sensitive files remain
+
+This ensures that even if temporary files are created during the CI process, they will never be included in the published Helm chart.
