@@ -194,7 +194,7 @@ runs:
       with:
         version: 25.10.2
     - name: Submit metadata to ReARM
-      uses: relizaio/rearm-add-release@65a54227a1f06aea0d8e95903fbfae5a5bb129d6 # v1.4.0
+      uses: uses: relizaio/rearm-add-release@e7445a2fbded05d525f1cf6935444278b71ac6d1 # v1.4.1
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with:
         rearm_api_id: ${{ inputs.rearm_api_id }}
