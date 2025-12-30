@@ -218,6 +218,7 @@ runs:
         registry_host: ${{inputs.registry_host}}
         repo_path: ${{inputs.path}}
         enable_public_cosign_sigstore: ${{inputs.rearm_enable_public_cosign_sigstore}}
+        deliverable_type: FILE
     - name: Submit metadata to ReARM and Finalize
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       uses: relizaio/rearm-actions/finalize@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
