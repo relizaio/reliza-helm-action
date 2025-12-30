@@ -189,30 +189,59 @@ runs:
         path: ${{inputs.path}}
     - id: setup-rearm
       name: setup-rearm
-      uses: relizaio/setup-rearm-cli-action@c13e9de63cca5fdc18c72a7cded3e6a27d041d13 # v1.2.1
+      uses: relizaio/rearm-actions/setup-cli@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
-    - name: Submit metadata to ReARM
-      uses: relizaio/rearm-add-release@d40cd001b969b385e0f5ad34e0f770d93df3a179 # v1.5.1
+    - id: init_rearm
+      name: Initialize ReARM Flow
+      uses: relizaio/rearm-actions/initialize@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
+      with: 
+        rearm_api_id: ${{ inputs.rearm_api_id }}
+        rearm_api_key: ${{ inputs.rearm_api_key }}
+        rearm_api_url: ${{inputs.rearm_api_url}}
+        repo_path: ${{inputs.path}}
+        component: ${{inputs.rearm_component_id}}
+        version: ${{ steps.get-version.outputs.reliza_full_version }}
+    - name: Generate and sign SBOMs
+      if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
+      id: sbom
+      uses: relizaio/rearm-actions/sbom-sign-scan@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
+      with:
+        image_full_name: ${{inputs.registry_host}}/${{inputs.helm_chart_name}}
+        image_digest: sha256:$SHA_DIGEST
+        rearm_short_version: ${{ steps.init_rearm.outputs.short_version }}
+        rearm_full_version: ${{ steps.init_rearm.outputs.full_version }}
+        enable_sbom: "true"
+        source_code_sbom_type: helm
+        registry_username: ${{inputs.registry_username}}
+        registry_password: ${{inputs.registry_password}}
+        registry_host: ${{inputs.registry_host}}
+        repo_path: ${{inputs.path}}
+        enable_public_cosign_sigstore: ${{inputs.rearm_enable_public_cosign_sigstore}}
+    - name: Submit metadata to ReARM and Finalize
+      if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
+      uses: relizaio/rearm-actions/finalize@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
       with:
         rearm_api_id: ${{ inputs.rearm_api_id }}
         rearm_api_key: ${{ inputs.rearm_api_key }}
         rearm_api_url: ${{inputs.rearm_api_url}}
         image_full_name: ${{inputs.registry_host}}/${{inputs.helm_chart_name}}
         image_digest: sha256:$SHA_DIGEST
-        rearm_full_version: ${{ steps.get-version.outputs.reliza_full_version }}
         rearm_build_start: ${{ steps.get-version.outputs.reliza_build_start }}
-        commit_list: $COMMIT_LIST
-        rearm_build_status: $REARM_BUILD_STATUS
-        rearm_component_id: ${{inputs.rearm_component_id}}
-        enable_sbom: "true"
-        source_code_sbom_type: helm
+        rearm_short_version: ${{ steps.init_rearm.outputs.short_version }}
+        rearm_full_version: ${{ steps.init_rearm.outputs.full_version }}
+        rearm_build_lifecycle: $REARM_BUILD_STATUS
+        commit_list: ${{ steps.init_rearm.outputs.commit_list }}
+        sce_commit: ${{ steps.init_rearm.outputs.sce_commit }}
+        sce_commit_message: ${{ steps.init_rearm.outputs.sce_commit_message }}
+        sce_commit_date: ${{ steps.init_rearm.outputs.sce_commit_date }}
+        sce_vcs_uri: ${{ steps.init_rearm.outputs.sce_vcs_uri }}
+        scearts: ${{ steps.sbom.outputs.scearts }}
+        purl: ${{ steps.sbom.outputs.purl }}
+        repo_path: ${{inputs.path}}
+        finalize_release: "true"
+        component: ${{inputs.rearm_component_id}}
         deliverable_type: FILE
-        registry_username: ${{inputs.registry_username}}
-        registry_password: ${{inputs.registry_password}}
-        registry_host: ${{inputs.registry_host}}
-        path: ${{inputs.path}}
-        enable_public_cosign_sigstore: ${{inputs.rearm_enable_public_cosign_sigstore}}
 post:
   shell: bash
   run: |
