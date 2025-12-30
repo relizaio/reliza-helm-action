@@ -189,11 +189,11 @@ runs:
         path: ${{inputs.path}}
     - id: setup-rearm
       name: setup-rearm
-      uses: relizaio/rearm-actions/setup-cli@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
+      uses: relizaio/rearm-actions/setup-cli@b570579b24c24a8e1a949e8cfa50b0ddfcde2ccc # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
     - id: init_rearm
       name: Initialize ReARM Flow
-      uses: relizaio/rearm-actions/initialize@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
+      uses: relizaio/rearm-actions/initialize@b570579b24c24a8e1a949e8cfa50b0ddfcde2ccc # v1.0.0
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       with: 
         rearm_api_id: ${{ inputs.rearm_api_id }}
@@ -205,7 +205,7 @@ runs:
     - name: Generate and sign SBOMs
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
       id: sbom
-      uses: relizaio/rearm-actions/sbom-sign-scan@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
+      uses: relizaio/rearm-actions/sbom-sign-scan@b570579b24c24a8e1a949e8cfa50b0ddfcde2ccc # v1.0.0
       with:
         image_full_name: ${{inputs.registry_host}}/${{inputs.helm_chart_name}}
         image_digest: sha256:$SHA_DIGEST
@@ -221,7 +221,7 @@ runs:
         deliverable_type: FILE
     - name: Submit metadata to ReARM and Finalize
       if: ${{inputs.push_to_rearm == 'true' && env.RELIZA_DO_BUILD == 'true'}}
-      uses: relizaio/rearm-actions/finalize@902c5d8512e492be45c78c5d38ddc25577a52095 # v1.0.0
+      uses: relizaio/rearm-actions/finalize@b570579b24c24a8e1a949e8cfa50b0ddfcde2ccc # v1.0.0
       with:
         rearm_api_id: ${{ inputs.rearm_api_id }}
         rearm_api_key: ${{ inputs.rearm_api_key }}
